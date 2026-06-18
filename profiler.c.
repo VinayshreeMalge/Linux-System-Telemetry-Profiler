@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+void log_cpu_telemetry() {
+    FILE *fp;
+    char buffer[256];
+
+    // Read raw CPU stats directly from the Linux kernel /proc filesystem
+    fp = fopen("/proc/stat", "r");
+    if (fp == NULL) {
+        perror("Error opening kernel stat file");
+        return;
+    }
+
+    // Read the primary aggregate CPU thread execution state string
+    if (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        printf("[KERNEL TELEMETRY DATA] %s", buffer);
+    }
+    fclose(fp);
+}
+
+int main() {
+    // Collect active hardware telemetry metrics loops
+    for(int i = 0; i < 3; i++) {
+        log_cpu_telemetry();
+        sleep(1); // Sample telemetry metrics every 1 second
+    }
+    return 0;
+}
